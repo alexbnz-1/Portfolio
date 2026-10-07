@@ -23,7 +23,7 @@ The site can also be deployed from the `main` branch, using `/ (root)` as the pu
 ## Update the portfolio
 
 - **Content and links:** edit `index.html`.
-- **Design and mobile layouts:** edit `styles.css`.
+- **Design and mobile layouts:** edit `styles.css` and `experience.css`.
 - **Project assets:** add them to `assets/` and reference their relative paths.
 - **CV:** once a current CV is available, place it in `assets/` and add a descriptive download link. No placeholder CV is included.
 - **Contact:** currently uses the supplied LinkedIn profile. Add an email only if you want it publicly visible.
@@ -37,3 +37,7 @@ External Google Fonts enhance the typography, with local system-font fallbacks w
 ## Interaction and accessibility
 
 Project filters, animated reveals, subtle pointer tilt and a keyboard-accessible image viewer are progressive enhancements. The viewer supports Escape and left/right arrow keys. Reduced-motion preferences disable animation. Case studies remain readable without JavaScript. Original images are optimised as WebP assets.
+
+## Hardware showcase
+
+The hardware design projects lead the source order. The opening collage and sticky three-chapter hardware showcase use real portfolio assets. Native scrolling drives chapter transitions, image movement, a CAD-to-prototype reveal, hero typography and the horizontal divider. Chapter buttons provide direct navigation. On short screens and with reduced-motion preferences the showcase becomes a static sequence. No animation library or scroll interception is used.

@@ -68,7 +68,7 @@ function showImage(index) {
 document.querySelectorAll('[data-image]').forEach((button) => {
   button.addEventListener('click', () => {
     opener = button;
-    gallery = [...button.closest('.project').querySelectorAll('[data-image]')];
+    gallery = [...button.closest('.project, .gallery-group').querySelectorAll('[data-image]')];
     showImage(gallery.indexOf(button));
     dialog.showModal();
   });
@@ -90,13 +90,120 @@ dialog.addEventListener('click', (event) => {
 });
 dialog.addEventListener('close', () => opener?.focus());
 
-// A small pointer response makes the system diagram feel tactile on desktop.
-const panel = document.querySelector('.system-panel');
-panel.addEventListener('pointermove', (event) => {
-  if (event.pointerType !== 'mouse' || reducedMotion.matches) return;
-  const box = panel.getBoundingClientRect();
-  const x = (event.clientX - box.left) / box.width - 0.5;
-  const y = (event.clientY - box.top) / box.height - 0.5;
-  panel.style.transform = `perspective(1000px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg)`;
+// Scroll controls the showcase, typography and imagery without intercepting the wheel.
+const hero = document.querySelector('.cinematic-hero');
+const story = document.querySelector('.hardware-story');
+const sticky = document.querySelector('.hardware-sticky');
+const frames = [...document.querySelectorAll('.story-frame')];
+const chapters = [...document.querySelectorAll('[data-story-jump]')];
+const header = document.querySelector('.site-header');
+const work = document.getElementById('work');
+const contact = document.getElementById('contact');
+const divider = document.querySelector('.kinetic-divider');
+const root = document.documentElement;
+const clamp = (number, min = 0, max = 1) => Math.min(max, Math.max(min, number));
+let scheduled = false;
+let activeChapter = -1;
+let sceneEnabled = false;
+
+function setMotionMode() {
+  sceneEnabled = !reducedMotion.matches && window.innerHeight >= 700;
+  root.classList.toggle('scroll-enabled', sceneEnabled);
+  activeChapter = -1;
+  updateScroll();
+}
+
+function updateScroll() {
+  scheduled = false;
+  const heroBox = hero.getBoundingClientRect();
+  const storyBox = story.getBoundingClientRect();
+  const workBox = work.getBoundingClientRect();
+  const contactBox = contact.getBoundingClientRect();
+  const range = Math.max(1, root.scrollHeight - window.innerHeight);
+  root.style.setProperty('--page-progress', String(clamp(window.scrollY / range)));
+  const overDarkSurface = workBox.top > 75 || (contactBox.top <= 75 && contactBox.bottom > 75);
+  header.classList.toggle('is-light', !overDarkSurface);
+
+  if (!reducedMotion.matches) {
+    const heroProgress = clamp(-heroBox.top / heroBox.height);
+    hero.style.setProperty('--title-shift-1', `${heroProgress * -95}px`);
+    hero.style.setProperty('--title-shift-2', `${heroProgress * 75}px`);
+    hero.style.setProperty('--title-shift-3', `${heroProgress * -45}px`);
+    hero.style.setProperty('--hero-image-shift', `${heroProgress * -130}px`);
+    hero.style.setProperty('--hero-small-shift', `${heroProgress * -45}px`);
+    const dividerBox = divider.getBoundingClientRect();
+    divider.style.setProperty('--marquee-shift', `${-100 - (window.innerHeight - dividerBox.top) * 0.2}px`);
+    const contactProgress = clamp((window.innerHeight - contactBox.top) / (window.innerHeight + contactBox.height));
+    contact.style.setProperty('--contact-shift', `${(contactProgress - 0.5) * 120}px`);
+  }
+
+  const progress = clamp(-storyBox.top / Math.max(1, storyBox.height - sticky.offsetHeight));
+  const chapter = Math.min(frames.length - 1, Math.floor(progress * frames.length));
+  const localProgress = clamp(progress * frames.length - chapter);
+  story.style.setProperty('--chapter-progress', String(localProgress));
+  if (sceneEnabled) {
+    story.style.setProperty('--story-image-scale', String(1.01 + localProgress * 0.055));
+    story.style.setProperty('--story-image-y', `${(0.5 - localProgress) * 16}px`);
+  }
+  const prototypeProgress = sceneEnabled ? (chapter > 1 ? 1 : chapter < 1 ? 0 : clamp((localProgress - 0.12) / 0.76)) : 0.5;
+  story.style.setProperty('--prototype-progress', `${prototypeProgress * 100}%`);
+  story.style.setProperty('--prototype-seam-opacity', String(prototypeProgress > 0.02 && prototypeProgress < 0.98 ? 1 : 0));
+  const cncImage = frames[1].querySelector('[data-image]');
+  cncImage.dataset.image = prototypeProgress > 0.5 ? 'assets/final_product.webp' : 'assets/cnc_3d_final_design.webp';
+  cncImage.dataset.caption = prototypeProgress > 0.5 ? 'Desktop CNC — built prototype' : 'Desktop CNC — final mechanical design';
+  if (chapter !== activeChapter) {
+    activeChapter = chapter;
+    frames.forEach((frame, index) => {
+      const active = !sceneEnabled || index === chapter;
+      frame.classList.toggle('is-active', active);
+      frame.inert = !active;
+      frame.setAttribute('aria-hidden', String(!active));
+    });
+    chapters.forEach((button, index) => {
+      button.setAttribute('aria-pressed', String(index === chapter));
+      button.classList.toggle('is-past', index < chapter);
+    });
+  }
+}
+
+function scheduleScroll() {
+  if (!scheduled) {
+    scheduled = true;
+    window.requestAnimationFrame(updateScroll);
+  }
+}
+
+chapters.forEach((button, index) => {
+  button.addEventListener('click', () => {
+    const start = window.scrollY + story.getBoundingClientRect().top;
+    const scrollRange = Math.max(0, story.offsetHeight - sticky.offsetHeight);
+    window.scrollTo({ top: start + scrollRange * ((index + 0.18) / frames.length), behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+  });
 });
-panel.addEventListener('pointerleave', () => { panel.style.transform = ''; });
+
+// Featured project links always reveal their destination, even after filtering.
+document.querySelectorAll('.story-project-link').forEach((link) => {
+  link.addEventListener('click', () => {
+    filters.querySelector('[data-filter="all"]').click();
+    const target = document.querySelector(link.getAttribute('href'));
+    target.classList.add('is-visible');
+  });
+});
+
+document.querySelectorAll('.project .cover-image').forEach((card) => {
+  card.addEventListener('pointermove', (event) => {
+    if (event.pointerType !== 'mouse' || reducedMotion.matches) return;
+    const box = card.getBoundingClientRect();
+    card.style.setProperty('--card-y', `${((event.clientX - box.left) / box.width - 0.5) * 7}deg`);
+    card.style.setProperty('--card-x', `${-((event.clientY - box.top) / box.height - 0.5) * 7}deg`);
+  });
+  card.addEventListener('pointerleave', () => {
+    card.style.setProperty('--card-x', '0deg');
+    card.style.setProperty('--card-y', '0deg');
+  });
+});
+
+window.addEventListener('scroll', scheduleScroll, { passive: true });
+window.addEventListener('resize', setMotionMode, { passive: true });
+reducedMotion.addEventListener('change', setMotionMode);
+setMotionMode();
