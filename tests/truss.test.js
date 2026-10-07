@@ -1,9 +1,0 @@
-const {test}=require('node:test');const assert=require('node:assert/strict');
-const {solveTruss,presets}=require('../truss');
-const clone = x => structuredClone(x);
-const near=(actual,expected,tolerance=1e-8)=>assert.ok(Math.abs(actual-expected)<tolerance,`${actual} != ${expected}`);
-test('axial bar matches FL/EA and applied-load reaction',()=>{const result=solveTruss(clone(presets.bar));near(result.u[2],.0001);near(result.forces[0].force,10000);near(result.reactions[0],-10000);near(result.balance,0);});
-test('triangle agrees with statics and equilibrium',()=>{const result=solveTruss(clone(presets.triangle));near(result.reactions[1],10000);near(result.reactions[3],10000);near(result.forces[0].force,20000/3);near(result.forces[1].force,-10000*Math.sqrt(13)/3);near(result.balance,0);});
-test('load doubling doubles all linear responses',()=>{const model=clone(presets.warren),a=solveTruss(model);model.nodes.forEach(n=>{n.fx*=2;n.fy*=2;});const b=solveTruss(model);a.u.forEach((v,i)=>near(b.u[i],2*v));a.forces.forEach((v,i)=>near(b.forces[i].force,2*v.force));});
-test('doubling area halves displacements but leaves determinate forces',()=>{const model=clone(presets.warren),a=solveTruss(model);model.members.forEach(m=>m.A*=2);const b=solveTruss(model);a.u.forEach((v,i)=>near(b.u[i],v/2));a.forces.forEach((v,i)=>near(b.forces[i].force,v.force));});
-test('unstable supports, coincident nodes and invalid material fail clearly',()=>{let model=clone(presets.triangle);model.nodes.forEach(n=>n.support='free');assert.throws(()=>solveTruss(model),/supports/);model=clone(presets.triangle);model.members.pop();assert.throws(()=>solveTruss(model),/unstable/);model=clone(presets.bar);model.nodes[1].x=0;assert.throws(()=>solveTruss(model),/different positions/);model=clone(presets.bar);model.members[0].A=0;assert.throws(()=>solveTruss(model),/positive/);});
