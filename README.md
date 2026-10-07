@@ -30,6 +30,10 @@ The site can also be deployed from the `main` branch, using `/ (root)` as the pu
 
 ## Content notes
 
-Project descriptions are based on the public RoboDev and group7robocup README files. The system diagrams explain the documented architecture; they are not photographs or claims of tested hardware. RoboDev is marked as in development and RoboCup as a team project. Education, awards, employment history, individual team contributions and performance results have not been invented. Confirm and add these details before using the site in applications.
+Seven projects are included: RoboCup, RoboDev, OpenBrain, the autonomous line-follower (including the Jit Following Jawn work), the ENME302 frame toolkit, elevator controls and desktop CNC. Descriptions are based on shared source folders, public project documentation and the original portfolio. The University of Canterbury mechatronics education is supported by the original portfolio and supplied LinkedIn profile. The system diagrams explain the documented architecture; they are not photographs or claims of tested hardware. RoboDev is marked as in development and RoboCup as a team project. Awards, employment history, individual team contributions and performance results have not been invented.
 
 External Google Fonts enhance the typography, with local system-font fallbacks when unavailable. The site uses no analytics, cookies, contact-form service or backend.
+
+## Interaction and accessibility
+
+Project filters, animated reveals, subtle pointer tilt and a keyboard-accessible image viewer are progressive enhancements. The viewer supports Escape and left/right arrow keys. Reduced-motion preferences disable animation. Case studies remain readable without JavaScript. Original images are optimised as WebP assets.
