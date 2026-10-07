@@ -99,7 +99,7 @@ const chapters = [...document.querySelectorAll('[data-story-jump]')];
 const header = document.querySelector('.site-header');
 const work = document.getElementById('work');
 const contact = document.getElementById('contact');
-const divider = document.querySelector('.kinetic-divider');
+
 const root = document.documentElement;
 const clamp = (number, min = 0, max = 1) => Math.min(max, Math.max(min, number));
 let scheduled = false;
@@ -131,8 +131,6 @@ function updateScroll() {
     hero.style.setProperty('--title-shift-3', `${heroProgress * -45}px`);
     hero.style.setProperty('--hero-image-shift', `${heroProgress * -130}px`);
     hero.style.setProperty('--hero-small-shift', `${heroProgress * -45}px`);
-    const dividerBox = divider.getBoundingClientRect();
-    divider.style.setProperty('--marquee-shift', `${-100 - (window.innerHeight - dividerBox.top) * 0.2}px`);
     const contactProgress = clamp((window.innerHeight - contactBox.top) / (window.innerHeight + contactBox.height));
     contact.style.setProperty('--contact-shift', `${(contactProgress - 0.5) * 120}px`);
   }
@@ -203,7 +201,28 @@ document.querySelectorAll('.project .cover-image').forEach((card) => {
   });
 });
 
-window.addEventListener('scroll', scheduleScroll, { passive: true });
+gsap.registerPlugin(ScrollTrigger);
+ScrollTrigger.create({ start: 0, end: 'max', onUpdate: scheduleScroll, onRefresh: scheduleScroll });
 window.addEventListener('resize', setMotionMode, { passive: true });
 reducedMotion.addEventListener('change', setMotionMode);
 setMotionMode();
+
+// One page-level theme, initially following the system preference.
+const themePreference = window.matchMedia('(prefers-color-scheme: dark)');
+const themeButton = document.querySelector('.theme-toggle');
+let explicitTheme;
+try { explicitTheme = localStorage.getItem('portfolio-theme'); } catch {}
+function applyTheme() {
+  const dark = explicitTheme ? explicitTheme === 'dark' : themePreference.matches;
+  root.dataset.theme = dark ? 'dark' : 'light';
+  themeButton.textContent = dark ? 'Light' : 'Dark';
+  themeButton.setAttribute('aria-label', `Switch to ${dark ? 'light' : 'dark'} theme`);
+}
+themeButton.addEventListener('click', () => {
+  explicitTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  try { localStorage.setItem('portfolio-theme', explicitTheme); } catch {}
+  applyTheme();
+});
+themePreference.addEventListener('change', applyTheme);
+applyTheme();
+window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });

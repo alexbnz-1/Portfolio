@@ -41,3 +41,15 @@ Project filters, animated reveals, subtle pointer tilt and a keyboard-accessible
 ## Hardware showcase
 
 The hardware design projects lead the source order. The opening collage and sticky three-chapter hardware showcase use real portfolio assets. Native scrolling drives chapter transitions, image movement, a CAD-to-prototype reveal, hero typography and the horizontal divider. Chapter buttons provide direct navigation. On short screens and with reduced-motion preferences the showcase becomes a static sequence. No animation library or scroll interception is used.
+
+### Engineering lab
+
+The Truss solver tab is an actual direct-stiffness solver for 2D pin-jointed axial members. Nodes, loads, supports, connectivity, modulus and section area are editable. It reports member forces/stress, node displacement and reactions, shows an exaggerated deflected shape, rejects unstable models, and exports results as CSV. Presets include a Warren truss, triangle and axial bar. This is a browser adaptation of the bar formulation from the Python toolkit, not the full frame/beam desktop application.
+
+The Elevator control tab is a five-floor browser simulation inspired by the PLC project. It implements directional request scheduling, PI speed feedback, door dwell and interlocks, an obstruction sensor, pause/reset, emergency stop, and live velocity telemetry. It does not execute the original Structured Text program.
+
+### Design and development
+
+The redesign applies the installed taste skill: asymmetric real-photo hero, restrained typography, one page-level theme with light/dark toggle, consistent olive accent, and hardware-first ordering. GSAP ScrollTrigger drives the scroll narrative without custom scroll event listeners; CSS sticky keeps normal native scrolling. Animation and fonts are self-hosted. GSAP's license is stated in the vendored file headers: https://gsap.com/standard-license. Manrope and IBM Plex Mono use the SIL Open Font License.
+
+Run `npm ci`, then `npm test` for analytical and equilibrium checks. Run `npm run serve` for local preview. Rebuild the CSS bundle after edits with `cat styles.css experience.css lab.css > bundle.css`. GitHub Pages requires no runtime backend or npm build.

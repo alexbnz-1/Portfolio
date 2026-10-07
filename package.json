@@ -1,0 +1,30 @@
+{
+  "name": "portfolio-site",
+  "version": "1.0.0",
+  "description": "A responsive, accessible static portfolio for engineering, robotics and embedded-systems job and internship applications. Built with HTML, CSS and a small progressive-enhancement script; no package installation or build tool is required.",
+  "main": "script.js",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "serve": "python3 -m http.server 8080",
+    "audit": "lighthouse http://127.0.0.1:8080 --output=json --output-path=qa/lighthouse.json --chrome-flags=\"--headless\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexbnz-1/Portfolio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/alexbnz-1/Portfolio/issues"
+  },
+  "homepage": "https://github.com/alexbnz-1/Portfolio#readme",
+  "dependencies": {
+    "gsap": "^3.15.0"
+  },
+  "devDependencies": {
+    "lighthouse": "^13.5.0"
+  },
+  "private": true
+}
