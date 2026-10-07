@@ -148,7 +148,7 @@ function updateScroll() {
   story.style.setProperty('--prototype-seam-opacity', String(prototypeProgress > 0.02 && prototypeProgress < 0.98 ? 1 : 0));
   const cncImage = frames[1].querySelector('[data-image]');
   cncImage.dataset.image = prototypeProgress > 0.5 ? 'assets/final_product.webp' : 'assets/cnc_3d_final_design.webp';
-  cncImage.dataset.caption = prototypeProgress > 0.5 ? 'Desktop CNC — built prototype' : 'Desktop CNC — final mechanical design';
+  cncImage.dataset.caption = prototypeProgress > 0.5 ? 'Desktop CNC - built prototype' : 'Desktop CNC - final mechanical design';
   if (chapter !== activeChapter) {
     activeChapter = chapter;
     frames.forEach((frame, index) => {
@@ -226,3 +226,23 @@ themeButton.addEventListener('click', () => {
 themePreference.addEventListener('change', applyTheme);
 applyTheme();
 window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
+
+// Focus on visible mechanical details without pretending the render is a 3D model.
+const robotProject = document.getElementById('robocup');
+const robotDescriptions = {
+  assembly: 'Explore the original CAD assembly, then open the image for a closer look.',
+  drive: 'The side assembly shows toothed belts, pulleys and supported shafts within the metal frame.',
+  front: 'The front assembly brings curved drum surfaces, circular end plates and brackets into a compact mechanism.'
+};
+robotProject.querySelectorAll('[data-robot-focus]').forEach(button => {
+  button.addEventListener('click', () => {
+    robotProject.querySelector('.robocup-explorer').dataset.focus = button.dataset.robotFocus;
+    robotProject.querySelectorAll('[data-robot-focus]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+    robotProject.querySelector('.robocup-focus-description').textContent = robotDescriptions[button.dataset.robotFocus];
+  });
+});
+// Entry motion establishes the headline first, followed by the robot and electronics.
+if (!reducedMotion.matches) {
+  gsap.from('.hero-copy > *', { opacity: 0, y: 24, duration: .8, stagger: .1, ease: 'power3.out', clearProps: 'opacity,transform' });
+  gsap.from('.hero-art', { opacity: 0, y: 35, duration: 1.1, delay: .25, ease: 'power3.out', clearProps: 'opacity,transform' });
+}

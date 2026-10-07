@@ -53,3 +53,5 @@ The Elevator control tab is a five-floor browser simulation inspired by the PLC 
 The redesign applies the installed taste skill: asymmetric real-photo hero, restrained typography, one page-level theme with light/dark toggle, consistent olive accent, and hardware-first ordering. GSAP ScrollTrigger drives the scroll narrative without custom scroll event listeners; CSS sticky keeps normal native scrolling. Animation and fonts are self-hosted. GSAP's license is stated in the vendored file headers: https://gsap.com/standard-license. Manrope and IBM Plex Mono use the SIL Open Font License.
 
 Run `npm ci` to restore development dependencies. Run `npm run serve` for local preview. Rebuild the CSS bundle after edits with `cat styles.css experience.css lab.css > bundle.css`. GitHub Pages requires no runtime backend or npm build.
+
+RoboCup uses the supplied original CAD render in the hero, hardware scroll showcase and featured project. The project includes keyboard-accessible assembly, belt-drive and front-assembly detail controls; these inspect the render rather than simulating a 3D model.
